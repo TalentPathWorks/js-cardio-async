@@ -21,7 +21,16 @@ Errors should also be logged (preferably in a human-readable format)
  * @param {string} file
  * @param {string} key
  */
-function get(file, key) {}
+function log(value){
+  return fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
+}
+ function get(file, key) {
+   return fs.readFile(file,'utf-8').then(data => {
+     const parsed = JSON.parse(data);
+     const value = parsed[key];
+     return log(value);
+   }).catch(err => log(`Error no such file: ${file}`)
+}
 
 /**
  * Sets the value of object[key] and rewrites object to file
@@ -29,7 +38,9 @@ function get(file, key) {}
  * @param {string} key
  * @param {string} value
  */
-function set(file, key, value) {}
+function set(file, key, value) {
+  console.log("SDF")
+}
 
 /**
  * Deletes key from object and rewrites object to file
