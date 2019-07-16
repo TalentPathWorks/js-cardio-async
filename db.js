@@ -2,7 +2,38 @@ const fs = require('fs').promises;
 /*
 All of your functions must return a promise!
 */
-
+/**
+ * Resets the database (does not touch added files)
+ */
+function reset() {
+  const andrew = fs.writeFile(
+    './andrew.json',
+    JSON.stringify({
+      firstname: 'Andrew',
+      lastname: 'Maney',
+      email: 'amaney@talentpath.com',
+    })
+  );
+  const scott = fs.writeFile(
+    './scott.json',
+    JSON.stringify({
+      firstname: 'Scott',
+      lastname: 'Roberts',
+      email: 'sroberts@talentpath.com',
+      username: 'scoot',
+    })
+  );
+  const post = fs.writeFile(
+    './post.json',
+    JSON.stringify({
+      title: 'Async/Await lesson',
+      description: 'How to write asynchronous JavaScript',
+      date: 'July 15, 2019',
+    })
+  );
+  const log = fs.writeFile('./log.txt', '');
+  return Promise.all([andrew, scott, post, log]);
+}
 /* 
 Every function should be logged with a timestamp.
 If the function logs data, then put that data into the log
@@ -66,7 +97,12 @@ async function set(file, key, value) {
  * @param {string} file
  * @param {string} key
  */
+// TODO:Error Checking
 async function remove(file, key) {
+
+  if(!await doesFileExists(file)){
+    return await log(`Error: ${file} does not exists`)
+  }
   try{
     const data = await fs.readFile(file,'utf-8');
     const plus = JSON.parse(data);
@@ -84,19 +120,14 @@ async function remove(file, key) {
  * @param {string} file
  */
 async function deleteFile(file) {
-  const result = await doesFileExists(file);
-  console.log(result)
-  if(!result){
-    console.log("ERROR does not exist")
+  if(!await doesFileExists(file)){
     return await log(`Error: ${file} does not exists`)
   }
-  else{
-    try{ 
-      await fs.unlink(file);
-      return log(`Deleted ${file}`)
+  try{ 
+    await fs.unlink(file);
+    return log(`Deleted ${file}`)
   }catch(err){
     log(`Error with deleting file ${file}`);
-  }
   }
   
 }
@@ -107,6 +138,9 @@ async function deleteFile(file) {
  * @param {string} file JSON filename
  */
 async function createFile(file) {
+  if(await doesFileExists(file)){
+    return log(`File ${file} already exists`);
+  }
   try{
     const data = await fs.writeFile(file,"{}");
     return log(`Created file ${file}`);
@@ -138,29 +172,27 @@ async function mergeData() {
   const fileNames = await fs.readdir("./");
 
   // Filter files for .json and exclude node files
-  const filteredJsonFiles = fileNames.filter(name => name.includes('.json')&& name !== "package.json" && name !== "package-lock.json");
+  const filteredJsonFiles = fileNames.filter(name => name.includes('.json') && name !== "package.json" && name !== "package-lock.json");
 
   // Read all files
-  const data = filteredJsonFiles.map(async (value)=>{
-    return await fs.readFile(value,"utf-8");
+  const data = filteredJsonFiles.map((value)=>{
+    return fs.readFile(value,"utf-8");
   })
   // Process all data
   const allPromises = Promise.all(data);
 
   await allPromises.then(async (dataArray) => {
     // Get data out of dataArray
-    const allData = dataArray.map((data,index)=>{
+    const jsonBody = dataArray.map((data,index)=>{
       return "\n\t" + filteredJsonFiles[index].slice(0,-5) + ": " + data;
     })
     // Add ending brackets
-    const megaJSON = "{" + allData + "}";
+    const jsonObject = "{" + jsonBody + "\n}";
     // Print to file
-    const result = await fs.writeFile('MEGAFILE.json',megaJSON);
-    return log(`Merged ALL JSON FILES`)
+    const result = await fs.writeFile('mergeData.json',jsonObject);
+    return log(`ALL JSON FILES ARE MERGED`)
   })
   .catch(err=>console.log(err));
-
-  console.log("End of Function");
 }
 
 /**
@@ -205,6 +237,7 @@ function difference(fileA, fileB) {
 
 module.exports = {
   get,
+  reset,
   set,
   remove,
   deleteFile,

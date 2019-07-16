@@ -1,13 +1,7 @@
-
-Error with deleting file MEGAFILE.json 1563301999091
-Deleted andrew.json 1563302339285
-Error: ADFASDFD does not exists 1563302641881
-Error: post.json does not exists 1563302652080
-Error: post.json does not exists 1563302684111
-Error: post.json does not exists 1563302736295
-Deleted post.json 1563302759498
-Deleted asdf.json 1563302824338
-Deleted asdf.json 1563302890857
-Error: adfasdfadsfasdf does not exists 1563303074722
-Deleted asdfasdf.json 1563303089107
-Error: asdfasdfasdfasdfasfads does not exists 1563303099116
+Merged ALL JSON FILES 1563303675750
+Merged ALL JSON FILES 1563303714403
+File TODO.json already exists 1563303904706
+Created file TODOFILE.json 1563303941513
+Error: asdfasdfa does not exists 1563304082128
+Deleted scott.json 1563304094021
+Deleted andrew.json 1563304128629
