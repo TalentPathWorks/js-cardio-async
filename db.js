@@ -24,12 +24,22 @@ Errors should also be logged (preferably in a human-readable format)
 function log(value){
   return fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
 }
- function get(file, key) {
+
+async function get(file, key) {
+  /*
    return fs.readFile(file,'utf-8').then(data => {
      const parsed = JSON.parse(data);
      const value = parsed[key];
-     return log(value);
-   }).catch(err => log(`Error no such file: ${file}`)
+     return log(`Got ${value} from ${file}`);
+   }).catch(err => log(`Error no such file: ${file}`))
+    */
+   try{
+   const data = await fs.readFile(file,'utf-8');
+   const keyValue = JSON.parse(data);
+   return log(`Got ${keyValue[key]} from ${file}`)
+  }catch{
+ 
+  }
 }
 
 /**
@@ -38,8 +48,12 @@ function log(value){
  * @param {string} key
  * @param {string} value
  */
-function set(file, key, value) {
-  console.log("SDF")
+async function set(file, key, value) {
+ const data = await fs.readFile(file,'utf-8');
+ const plus = JSON.parse(data);
+ plus[key] = value;
+ const result = await fs.writeFile(file,JSON.stringify(plus));
+ return log(`Set ${value} for ${key} in ${file}`);
 }
 
 /**
@@ -47,14 +61,22 @@ function set(file, key, value) {
  * @param {string} file
  * @param {string} key
  */
-function remove(file, key) {}
+async function remove(file, key) {
+ const data = await fs.readFile(file,'utf-8');
+ const plus = JSON.parse(data);
+ plus[key] = "";
+ const result = await fs.writeFile(file,JSON.stringify(plus));
+ return log(`Set ${value} for ${key} in ${file}`);
+}
 
 /**
  * Deletes file.
  * Gracefully errors if the file does not exist.
  * @param {string} file
  */
-function deleteFile(file) {}
+function deleteFile(file) {
+
+}
 
 /**
  * Creates file with an empty object inside.

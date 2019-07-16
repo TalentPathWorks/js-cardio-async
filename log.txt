@@ -1,3 +1,14 @@
-
-sroberts@talentpath.com 1563230802696
-sroberts@talentpath.com 1563230886117
+Got sroberts@talentpath.com from scott.json 1563250086808
+Got sroberts@talentpath.com from scott.json 1563250117837
+{
+  "firstname": "Scott",
+  "lastname": "Roberts",
+  "email": "sroberts@talentpath.com",
+  "username": "scoot"
+}
+ 1563250172750
+Got email from scott.json 1563250396030
+Got email from scott.json 1563250417070
+Got sroberts@talentpath.com from scott.json 1563250451051
+Got sroberts@talentpath.com from scott.json 1563250528672
+Got asdfasdf from scott.json 1563252338353
