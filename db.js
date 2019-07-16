@@ -24,12 +24,10 @@ Errors should also be logged (preferably in a human-readable format)
 function log(value){
   return fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
 }
-function doesFileExists(fileName){
-  const names = fs.readdir('./');
-  if(names.includes(fileName))
-    return true;
-  else
-    return false;
+async function doesFileExists(fileName){
+  const names = await fs.readdir('./');
+  const filteredJsonFiles = names.filter(name =>  name === (fileName));
+  return filteredJsonFiles.length === 0 ? false: true
 }
 async function get(file, key) {
   try{
@@ -86,15 +84,21 @@ async function remove(file, key) {
  * @param {string} file
  */
 async function deleteFile(file) {
-  try{
-    const data = await fs.unlink(file);
-    if(!data)
-      throw new Error()
-    else
+  const result = await doesFileExists(file);
+  console.log(result)
+  if(!result){
+    console.log("ERROR does not exist")
+    return await log(`Error: ${file} does not exists`)
+  }
+  else{
+    try{ 
+      await fs.unlink(file);
       return log(`Deleted ${file}`)
   }catch(err){
     log(`Error with deleting file ${file}`);
   }
+  }
+  
 }
 
 /**
@@ -135,26 +139,22 @@ async function mergeData() {
 
   // Filter files for .json and exclude node files
   const filteredJsonFiles = fileNames.filter(name => name.includes('.json')&& name !== "package.json" && name !== "package-lock.json");
-  console.log('File Names',filteredJsonFiles)
 
   // Read all files
   const data = filteredJsonFiles.map(async (value)=>{
     return await fs.readFile(value,"utf-8");
   })
-
-  console.log('Data',data);
   // Process all data
   const allPromises = Promise.all(data);
-  console.log('AllPromises',allPromises);
+
   await allPromises.then(async (dataArray) => {
     // Get data out of dataArray
     const allData = dataArray.map((data,index)=>{
-      return filteredJsonFiles[index].slice(0,-5) + ": {"+ data.replace(/{/gi,' ').replace(/}/gi,' ') + "}";
+      return "\n\t" + filteredJsonFiles[index].slice(0,-5) + ": " + data;
     })
     // Add ending brackets
-    const megaJSON = "{\n\t" + allData + "}";
+    const megaJSON = "{" + allData + "}";
     // Print to file
-    console.log('Combined JSON',megaJSON)
     const result = await fs.writeFile('MEGAFILE.json',megaJSON);
     return log(`Merged ALL JSON FILES`)
   })
@@ -171,7 +171,15 @@ async function mergeData() {
  *  union('scott.json', 'andrew.json')
  *  // ['firstname', 'lastname', 'email', 'username']
  */
-function union(fileA, fileB) {}
+async function union(fileA, fileB) {
+  // Read in files
+  const file1 = await fs.readFile(fileA,'utf-8');
+  const file2 = await fs.readFile(fileB,'utf-8');
+  // Figure out to compare keys
+  console.log("file 1", file1)
+  console.log("file 2", file2)
+
+}
 
 /**
  * Takes two files and logs all the properties that both objects share

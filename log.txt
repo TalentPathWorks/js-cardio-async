@@ -1,26 +1,13 @@
-Got sroberts@talentpath.com from scott.json 1563250086808
-Got sroberts@talentpath.com from scott.json 1563250117837
-{
-  "firstname": "Scott",
-  "lastname": "Roberts",
-  "email": "sroberts@talentpath.com",
-  "username": "scoot"
-}
- 1563250172750
-Got email from scott.json 1563250396030
-Got email from scott.json 1563250417070
-Got sroberts@talentpath.com from scott.json 1563250451051
-Got sroberts@talentpath.com from scott.json 1563250528672
-Got asdfasdf from scott.json 1563252338353
-Remove email in scott.json 1563255583675
-Deleted scott.json 1563255873370
-Created file rsancez 1563287111653
-Created file rsanchez 1563287213642
-Created file asdf 1563287470001
-Created file wub 1563287544210
-Created file web 1563287587356
-Created file web 1563287591244
-Deleted web.json 1563291613229
-Deleted asdf.json 1563291908102
-Deleted scott.json 1563294734564
-OH FUCK 1563300084729
+
+Error with deleting file MEGAFILE.json 1563301999091
+Deleted andrew.json 1563302339285
+Error: ADFASDFD does not exists 1563302641881
+Error: post.json does not exists 1563302652080
+Error: post.json does not exists 1563302684111
+Error: post.json does not exists 1563302736295
+Deleted post.json 1563302759498
+Deleted asdf.json 1563302824338
+Deleted asdf.json 1563302890857
+Error: adfasdfadsfasdf does not exists 1563303074722
+Deleted asdfasdf.json 1563303089107
+Error: asdfasdfasdfasdfasfads does not exists 1563303099116
