@@ -33,12 +33,12 @@ async function get(file, key) {
      return log(`Got ${value} from ${file}`);
    }).catch(err => log(`Error no such file: ${file}`))
     */
-   try{
+  try{
    const data = await fs.readFile(file,'utf-8');
    const keyValue = JSON.parse(data);
    return log(`Got ${keyValue[key]} from ${file}`)
   }catch{
- 
+    console.log("WRONG")
   }
 }
 
@@ -49,11 +49,15 @@ async function get(file, key) {
  * @param {string} value
  */
 async function set(file, key, value) {
- const data = await fs.readFile(file,'utf-8');
- const plus = JSON.parse(data);
- plus[key] = value;
- const result = await fs.writeFile(file,JSON.stringify(plus));
- return log(`Set ${value} for ${key} in ${file}`);
+  try{
+    const data = await fs.readFile(file,'utf-8');
+    const plus = JSON.parse(data);
+    plus[key] = value;
+    const result = await fs.writeFile(file,JSON.stringify(plus));
+    return log(`Set ${value} for ${key} in ${file}`);
+  }catch{
+    console.log("WRONG")
+  }
 }
 
 /**
@@ -62,11 +66,15 @@ async function set(file, key, value) {
  * @param {string} key
  */
 async function remove(file, key) {
- const data = await fs.readFile(file,'utf-8');
- const plus = JSON.parse(data);
- plus[key] = "";
- const result = await fs.writeFile(file,JSON.stringify(plus));
- return log(`Set ${value} for ${key} in ${file}`);
+  try{
+    const data = await fs.readFile(file,'utf-8');
+    const plus = JSON.parse(data);
+    delete plus[key]
+    const result = await fs.writeFile(file,JSON.stringify(plus));
+    return log(`Remove ${key} in ${file}`);
+  }catch{
+    console.log("WRONG");
+  }
 }
 
 /**
@@ -74,8 +82,13 @@ async function remove(file, key) {
  * Gracefully errors if the file does not exist.
  * @param {string} file
  */
-function deleteFile(file) {
-
+async function deleteFile(file) {
+  try{
+    const data = await fs.unlink(file);
+    return log(`Deleted ${file}`)
+  }catch{
+    console.log("WRONG")
+  }
 }
 
 /**
@@ -83,7 +96,14 @@ function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-function createFile(file) {}
+async function createFile(file) {
+  try{
+    const data = await fs.writeFile(file + ".json","{}");
+    return log(`Created file ${file}`);
+  }catch{
+    console.log("WRONG")
+  }
+}
 
 /**
  * Merges all data into a mega object and logs it.
@@ -103,7 +123,9 @@ function createFile(file) {}
  *    }
  * }
  */
-function mergeData() {}
+function mergeData() {
+// read in both 
+}
 
 /**
  * Takes two files and logs all the properties as a list without duplicates
@@ -133,7 +155,9 @@ function intersect(fileA, fileB) {}
  *    difference('scott.json', 'andrew.json')
  *    // ['username']
  */
-function difference(fileA, fileB) {}
+function difference(fileA, fileB) {
+
+}
 
 module.exports = {
   get,
