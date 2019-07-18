@@ -1,5 +1,5 @@
 const url = require('url');
-const {getHome, set, get, remove, deletefile, createfile,reset, notFound,postWrite, getFile} = require('./controller.js');
+const {getHome, set, get, remove, deletefile, createfile,reset, notFound,postWrite, getFile, mergeAllFiles} = require('./controller.js');
 
 
 exports.routeHandler = (request,response) => {
@@ -32,6 +32,9 @@ exports.routeHandler = (request,response) => {
   }
   if(pathname.startsWith('/get') && request.method === 'GET'){
     return getFile(pathname,request,response);
+  }
+  if(pathname === '/mergealldata' && request.method === 'GET'){
+    return mergeAllFiles(request,response);
   }
   notFound(request,response)
 }

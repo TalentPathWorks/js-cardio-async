@@ -98,46 +98,73 @@ exports.remove = (query,response) => {
   })
   .catch(err =>{
     console.error(err);
+    response.writeHead(400,{
+      'Content-type': 'text/html'
+    })
     response.end(`An error has occured, ${err}`);
   })
 }
 /**
- * 
+ * Deletes a file from the diretory
+ * @param {filename, response} 
+ * @returns {String} Success or Failure
  */
 exports.deletefile = (query,response) => {
+  if(!query.file){
+    response.writeHead(400);
+    return response.end(`An error has occured, Missing values`);
+  }
   return db.deleteFile(query.file,query.key)
   .then(()=>{
     response.end(`Success! File has been deleted.`);
   })
   .catch(err =>{
     console.error(err);
+    response.writeHead(400,{
+      'Content-type': 'text/html'
+    })
     response.end(`An error has occured, ${err}`);
   })
 }
 /**
- * 
+ * Creates an empty file
+ * @param {string,response} filename
+ * @returns {response} Success or Failure
  */
 exports.createfile = (query,response) =>{
   return db.createFile(query.filename)
   .then(()=>{
-    response.end('File Created')
+    response.end(`Success! File has been created.`);
   })
   .catch(err =>{
     console.error(err);
-    response.end("ERROR")
+    response.writeHead(400,{
+      'Content-type': 'text/html'
+    })
+    response.end(`An error has occured, ${err}`);
   })
 }
 /**
- * 
+ * Creates a file with data passed from client
+ * @param {string, request, response}
+ * @returns {string} Success or Failure
  */
 exports.postWrite = (pathname,request,response) => {
   const data = [];
+
   request.on('data',chunk=>{
     data.push(chunk);
   });
   request.on('end',async ()=>{
-    const body = JSON.parse(data)
-    return await db.createFile(pathname.split('/')[2],body)
+    const body = JSON.parse(data);
+    // If there isn't a filename in the url
+    if(pathname.split('/')[2] === ''){
+      response.writeHead(400);
+      return response.end(`An error has occured, Missing filename in url.`);
+    }
+    const filename = pathname.split('/')[2];
+    console.log('body',body)
+    return await db.createFile(filename,body)
     .then(()=>{
       response.writeHead(201,{
         'Content-Type': 'text/html'
@@ -146,12 +173,15 @@ exports.postWrite = (pathname,request,response) => {
     })
     .catch(err=>{
       console.error(err);
+      response.writeHead(400,{
+        'Content-type': 'text/html'
+      })
       response.end(`An error has occured while creating file. ${err} `)
     })
   });
 }
 /**
- * 
+ * Retrieve a file and sends back the data
  */
 exports.getFile = (pathname, request, response) =>{
   return db.getFile(pathname.split('/')[2])
@@ -164,6 +194,21 @@ exports.getFile = (pathname, request, response) =>{
     })
     .catch(err =>{
       console.error(err);
-      response.end(`An error has occured while retrieving file. ${err}`)
+      response.writeHead(400,{
+        'Content-type': 'text/html'
+      });
+      response.end(`An error has occured while retrieving file. ${err}`);
     })
+}
+
+exports.mergeAllFiles = (request,response) => {
+  return db.mergeData()
+  .then((data)=>{
+    response.writeHead(200,{
+      'Content-type': 'application/json',
+    })
+    response.end(data);
+  })
+  .catch(err=>
+    response.end('OOPS'));
 }

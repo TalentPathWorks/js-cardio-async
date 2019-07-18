@@ -76,7 +76,7 @@ async function get(file, key) {
    const value = keyValue[key];
    if(!value) 
     return log(`Error: ${key} invalid key on ${file}`,'Invalid Key');
-   log(`Got ${value} from ${file}`);
+   await log(`Got ${value} from ${file}`);
    return value
   }catch(err){
     return log(`Error with your input ${file}`,err);
@@ -156,6 +156,8 @@ async function createFile(file, content) {
     if(await doesFileExists(file)){
       return log(`Error with creating file ${file}`,'File already exists.');
     }
+    if(content === undefined)
+      content = {};
     const data = await fs.writeFile(file,JSON.stringify(content));
     return log(`Created file ${file}`);
   }catch(err){
@@ -211,7 +213,7 @@ async function mergeData() {
   // Process all data
   const allPromises = Promise.all(data);
 
-  await allPromises.then(async (dataArray) => {
+  return await allPromises.then(async (dataArray) => {
     // Get data out of dataArray
     const jsonBody = dataArray.map((data,index)=>{
       return "\n\t" + filteredJsonFiles[index].slice(0,-5) + ": " + data;
@@ -220,7 +222,8 @@ async function mergeData() {
     const jsonObject = "{" + jsonBody + "\n}";
     // Print to file
     const result = await fs.writeFile('mergeData.json',jsonObject);
-    return log(`ALL JSON FILES ARE MERGED`)
+    log(`All json objects merged.`)
+    return jsonObject;
   })
   .catch(err=>console.log(err));
 }
