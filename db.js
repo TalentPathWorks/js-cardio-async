@@ -146,6 +146,7 @@ async function createFile(file) {
     return log(`Created file ${file}`);
   }catch(err){
     log(`Error with creating file ${file}`);
+    return err;
   }
 }
 
