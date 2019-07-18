@@ -1,9 +1,0 @@
-Got sroberts@talentpath.com from scott.json 1563467037527
-Set sdfsfds for email in scott.json 1563467044378
-Created file asdf.json 1563467049659
-File asdf.json already exists 1563467105304
-File asdf.json already exists 1563467190216
-File asdf.json already exists 1563467202281
-File asdf.json already exists 1563467224951
-File asdf.json already exists 1563467236814
-File asdf.json already exists 1563467277744
