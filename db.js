@@ -222,8 +222,7 @@ async function mergeData() {
     const jsonObject = "{" + jsonBody + "\n}";
     // Print to file
     const result = await fs.writeFile('mergeData.json',jsonObject);
-    log(`All json objects merged.`)
-    return jsonObject;
+    return log(`All json objects merged.`)    
   })
   .catch(err=>console.log(err));
 }

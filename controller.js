@@ -151,34 +151,33 @@ exports.createfile = (query,response) =>{
  */
 exports.postWrite = (pathname,request,response) => {
   const data = [];
-
-  request.on('data',chunk=>{
-    data.push(chunk);
-  });
-  request.on('end',async ()=>{
-    const body = JSON.parse(data);
-    // If there isn't a filename in the url
-    if(pathname.split('/')[2] === ''){
-      response.writeHead(400);
-      return response.end(`An error has occured, Missing filename in url.`);
-    }
-    const filename = pathname.split('/')[2];
-    console.log('body',body)
-    return await db.createFile(filename,body)
-    .then(()=>{
-      response.writeHead(201,{
-        'Content-Type': 'text/html'
-      });
-      return response.end(`Success: File has been created`)
-    })
-    .catch(err=>{
-      console.error(err);
-      response.writeHead(400,{
-        'Content-type': 'text/html'
+    request.on('data',chunk=>{
+      data.push(chunk);
+    });
+    request.on('end',async ()=>{
+      const body = JSON.parse(data);
+      // If there isn't a filename in the url
+      if(pathname.split('/')[2] === ''){
+        response.writeHead(400);
+        return response.end(`An error has occured, Missing filename in url.`);
+      }
+      const filename = pathname.split('/')[2];
+      console.log('body',body)
+      return await db.createFile(filename,body)
+      .then(()=>{
+        response.writeHead(201,{
+          'Content-Type': 'text/html'
+        });
+        return response.end(`Success: File has been created`)
       })
-      response.end(`An error has occured while creating file. ${err} `)
+      .catch(err=>{
+        console.error(err);
+        response.writeHead(400,{
+          'Content-type': 'text/html'
+        })
+        response.end(`An error has occured while creating file. ${err} `)
+      })
     })
-  });
 }
 /**
  * Retrieve a file and sends back the data
@@ -203,11 +202,11 @@ exports.getFile = (pathname, request, response) =>{
 
 exports.mergeAllFiles = (request,response) => {
   return db.mergeData()
-  .then((data)=>{
-    response.writeHead(200,{
-      'Content-type': 'application/json',
-    })
-    response.end(data);
+  .then(()=>{
+    response.writeHead(201,{
+      'Content-Type': 'text/html'
+    });
+    response.end('Success! All data has been written to mergeData.json');
   })
   .catch(err=>
     response.end('OOPS'));
