@@ -1,10 +1,5 @@
 const fs = require('fs').promises;
-/*
-All of your functions must return a promise!
-*/
-/**
- * Resets the database (does not touch added files)
- */
+
 function reset() {
   const andrew = fs.writeFile(
     './andrew.json',
@@ -52,23 +47,39 @@ Errors should also be logged (preferably in a human-readable format)
  * @param {string} file
  * @param {string} key
  */
-function log(value){
-  return fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
+async function log(value,err){
+  await fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
+  if(err) 
+    throw err;
 }
+/**
+ * 
+ * @param {*} fileName 
+ */
 async function doesFileExists(fileName){
   const names = await fs.readdir('./');
   const filteredJsonFiles = names.filter(name =>  name === (fileName));
   return filteredJsonFiles.length === 0 ? false: true
 }
+/**
+ * Returns a keyvalue from a file
+ * @param {String} file 
+ * @param {String} key 
+ */
 async function get(file, key) {
   try{
+    if(!await doesFileExists(file)){
+      return log(`Error finding ${file}`,'File does not exists');
+    }
    const data = await fs.readFile(file,'utf-8');
    const keyValue = JSON.parse(data);
    const value = keyValue[key];
-   if(!value) return log(`Error: ${key} invalid key on ${file}`);
-   return log(`Got ${value} from ${file}`);
-  }catch{
-    log(`Error with your input ${file}`);
+   if(!value) 
+    return log(`Error: ${key} invalid key on ${file}`,'Invalid Key');
+   await log(`Got ${value} from ${file}`);
+   return value
+  }catch(err){
+    return log(`Error with your input ${file}`,err);
   }
 }
 
@@ -79,16 +90,17 @@ async function get(file, key) {
  * @param {string} value
  */
 async function set(file, key, value) {
-  if(!doesFileExists(file))
-    return log(`Set ${file} does not exists`)
   try{
+    if(!await doesFileExists(file)){
+      return log(`Error finding ${file}`,'File does not exists');
+    }
     const data = await fs.readFile(file,'utf-8');
     const plus = JSON.parse(data);
     plus[key] = value;
     const result = await fs.writeFile(file,JSON.stringify(plus));
     return log(`Set ${value} for ${key} in ${file}`);
-  }catch{
-    log(`Error with setting ${value} for ${key} on ${file}`);
+  }catch (err) {
+    return log(`Error with setting ${value} for ${key} on ${file}`,err);
   }
 }
 
@@ -99,18 +111,20 @@ async function set(file, key, value) {
  */
 // TODO:Error Checking
 async function remove(file, key) {
-
-  if(!await doesFileExists(file)){
-    return await log(`Error: ${file} does not exists`)
-  }
   try{
+    if(!await doesFileExists(file)){
+      return await log(`Error: ${file} does not exists`)
+    }
     const data = await fs.readFile(file,'utf-8');
     const plus = JSON.parse(data);
+    if(plus[key] === undefined){
+      return await log(`Error: ${file} does not contain ${key}`,`Key does not exists in file`)
+    }
     delete plus[key]
     const result = await fs.writeFile(file,JSON.stringify(plus));
     return log(`Remove ${key} in ${file}`);
   }catch(err){
-    log(`Error with removing ${key} on ${file}`);
+    return log(`Error with removing ${key} on ${file}`,err);
   }
 }
 
@@ -120,14 +134,13 @@ async function remove(file, key) {
  * @param {string} file
  */
 async function deleteFile(file) {
-  if(!await doesFileExists(file)){
-    return await log(`Error: ${file} does not exists`)
-  }
   try{ 
+    if(!await doesFileExists(file))
+      return log(`Error finding ${file}`,'File does not exists');
     await fs.unlink(file);
     return log(`Deleted ${file}`)
   }catch(err){
-    log(`Error with deleting file ${file}`);
+    return log(`Error with deleting file ${file}`,err);
   }
   
 }
@@ -137,18 +150,37 @@ async function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-async function createFile(file) {
-  if(await doesFileExists(file)){
-    return log(`File ${file} already exists`);
-  }
+async function createFile(file, content) {
+  
   try{
-    const data = await fs.writeFile(file,"{}");
+    if(await doesFileExists(file)){
+      return log(`Error with creating file ${file}`,'File already exists.');
+    }
+    if(content === undefined)
+      content = {};
+    const data = await fs.writeFile(file,JSON.stringify(content));
     return log(`Created file ${file}`);
   }catch(err){
-    log(`Error with creating file ${file}`);
+    return log(`Error with creating file ${file}`,err);
   }
 }
-
+/**
+ * Creates file with an empty object inside.
+ * Gracefully errors if the file already exists.
+ * @param {string} file JSON filename
+ */
+async function getFile(file) {
+    try{
+      if(!await doesFileExists(file)){
+        return log(`Error finding ${file}`,'File does not exists');
+      }
+     const data = await fs.readFile(file,'utf-8');
+     log(`Got ${data} from ${file}`);
+     return data;
+    }catch(err){
+      return log(`Error: ${file} does not exists`,err);
+    }
+}
 /**
  * Merges all data into a mega object and logs it.
  * Each object key should be the filename (without the .json) and the value should be the contents
@@ -181,7 +213,7 @@ async function mergeData() {
   // Process all data
   const allPromises = Promise.all(data);
 
-  await allPromises.then(async (dataArray) => {
+  return await allPromises.then(async (dataArray) => {
     // Get data out of dataArray
     const jsonBody = dataArray.map((data,index)=>{
       return "\n\t" + filteredJsonFiles[index].slice(0,-5) + ": " + data;
@@ -190,7 +222,7 @@ async function mergeData() {
     const jsonObject = "{" + jsonBody + "\n}";
     // Print to file
     const result = await fs.writeFile('mergeData.json',jsonObject);
-    return log(`ALL JSON FILES ARE MERGED`)
+    return log(`All json objects merged.`)    
   })
   .catch(err=>console.log(err));
 }
@@ -246,4 +278,5 @@ module.exports = {
   union,
   intersect,
   difference,
+  getFile,
 };
