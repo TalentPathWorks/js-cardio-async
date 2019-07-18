@@ -1,30 +1,37 @@
-const {getHome, set, get, remove, deletefile, createfile,reset} = require('./controller.js');
 const url = require('url');
+const {getHome, set, get, remove, deletefile, createfile,reset, notFound,postWrite, getFile} = require('./controller.js');
 
-exports.routeHandler = (request,response) =>{
-  if(request.url === '/' && request.method === 'GET'){
-    return getHome(request,response)
+
+exports.routeHandler = (request,response) => {
+  const {pathname, query} = url.parse(request.url, true);
+
+  if(pathname === '/' && request.method === 'GET'){
+    return getHome(request,response);
   }
-  const parsedUrl = url.parse(request.url, true);
-  const query = parsedUrl.query;
-  
-  if(parsedUrl.pathname === '/reset' && request.method === 'GET'){
-    reset();
-    return response.end("Files reset")
+  if(pathname === '/reset' && request.method === 'GET'){
+    reset(request,response);
+    return response.end("Files reset");
   }
-  if(parsedUrl.pathname === '/get' && request.method === 'POST'){
-    return get(query,response)
+  if(pathname === '/getvalue' && request.method === 'POST'){
+    return get(query,response);
   }
-  if(parsedUrl.pathname === '/set' && request.method === 'PATCH'){
+  if(pathname === '/set' && request.method === 'PATCH'){
     return set(query,response);
   }
-  if(parsedUrl.pathname === '/remove' && request.method === 'DELETE'){
-   return remove(query,response)
+  if(pathname === '/remove' && request.method === 'DELETE'){
+   return remove(query,response);
   }
-  if(parsedUrl.pathname === '/deletefile' && request.method === 'DELETE'){
-    return deletefile(query,response)
+  if(pathname === '/deletefile' && request.method === 'DELETE'){
+    return deletefile(query,response);
   }
-  if(parsedUrl.pathname === '/createfile' && request.method === 'POST'){
-    return createfile(query,response)
+  if(pathname === '/createfile' && request.method === 'POST'){
+    return createfile(query,response);
   }
+  if(pathname.startsWith('/write')&& request.method === 'POST'){
+    return postWrite(pathname,request,response);
+  }
+  if(pathname.startsWith('/get') && request.method === 'GET'){
+    return getFile(pathname,request,response);
+  }
+  notFound(request,response)
 }
