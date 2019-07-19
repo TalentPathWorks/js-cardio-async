@@ -1,16 +1,6 @@
 const db = require('./db.js');
 const fs = require('fs').promises;
 /**
- * 404 Error Message
- * @returns {response} Returns html of a 404 page
- */
-exports.notFound = async (request,response)=>{
-  const html = await fs.readFile('404.html')
-
-  response.writeHead(404,{'Content-Type': 'text/html'});
-  response.end(html);
-}
-/**
  * A test controller
  * @returns {response} A stringified JSON
  */
@@ -26,6 +16,7 @@ exports.getHome = (request,response) => {
   })
   return response.end(JSON.stringify(status));
 }
+
 /**
  * Resets the database 
  * Recreates scott.json ,andrew.json, post.json, and clears the log.txt files
@@ -43,12 +34,12 @@ exports.reset = (request,response) => {
  * @param {query,response} query containing a filename and key value
  * @returns {value} Returns the value of that key
  */
-exports.get = (query,response)=>{
-  if(!query.file|| !query.key){
+exports.getKeyValue = ({file,key},response)=>{
+  if(!file|| !key){
     response.writeHead(400);
-    return response.end(`An error has occured, Missing values.`);
+    return response.end(`An error has occurred, Missing values.`);
   }
-  return db.get(query.file,query.key)
+  return db.get(file,key)
     .then((keyValue)=>{
       response.writeHead(200,{
         'Content-type': 'text/html'
@@ -57,7 +48,7 @@ exports.get = (query,response)=>{
     })
     .catch(err =>{
       console.error(err);
-      response.end(`An error has occured, ${err}`)
+      response.end(`An error has occurred, ${err}`)
     })
 }
 /**
@@ -65,12 +56,12 @@ exports.get = (query,response)=>{
  * @param {query, response} query containing a filename, key, and value
  * @returns {response} Whether it succeeded or not
  */
-exports.set = (query,response) => {
-  if(!query.file|| !query.key|| !query.value){
+exports.set = ({file,key,value},response) => {
+  if(!file || !key || !value){
     response.writeHead(400);
-    return response.end(`An error has occured, Missing values`);
+    return response.end(`An error has occurred, Missing values`);
   }
-  return db.set(query.file,query.key,query.value)
+  return db.set(file,key,value)
     .then(()=>{
       response.end("Success! Value has been updated for that key.")
     })
@@ -79,7 +70,7 @@ exports.set = (query,response) => {
       response.writeHead(400,{
         'Content-Type': 'text/html',
       })
-      response.end(`An error has occured, ${err}.`)
+      response.end(`An error has occurred, ${err}.`)
     })
 }
 /**
@@ -87,12 +78,12 @@ exports.set = (query,response) => {
  * @param {query, response} query contains a filename and a key
  * @returns {string} If it succeeded or not
  */
-exports.remove = (query,response) => {
-  if(!query.file|| !query.key){
+exports.remove = ({file,key},response) => {
+  if(!file || !key){
     response.writeHead(400);
-    return response.end(`An error has occured, Missing values`);
+    return response.end(`An error has occurred, Missing values`);
   }
-  return db.remove(query.file,query.key)
+  return db.remove(file,key)
   .then(()=>{
     response.end(`Success! Key has been removed.`);
   })
@@ -101,7 +92,7 @@ exports.remove = (query,response) => {
     response.writeHead(400,{
       'Content-type': 'text/html'
     })
-    response.end(`An error has occured, ${err}`);
+    response.end(`An error has occurred, ${err}`);
   })
 }
 /**
@@ -109,12 +100,12 @@ exports.remove = (query,response) => {
  * @param {filename, response} 
  * @returns {String} Success or Failure
  */
-exports.deletefile = (query,response) => {
-  if(!query.file){
+exports.deletefile = ({file},response) => {
+  if(!file){
     response.writeHead(400);
-    return response.end(`An error has occured, Missing values`);
+    return response.end(`An error has occurred, Missing values`);
   }
-  return db.deleteFile(query.file,query.key)
+  return db.deleteFile(file)
   .then(()=>{
     response.end(`Success! File has been deleted.`);
   })
@@ -123,7 +114,7 @@ exports.deletefile = (query,response) => {
     response.writeHead(400,{
       'Content-type': 'text/html'
     })
-    response.end(`An error has occured, ${err}`);
+    response.end(`An error has occurred, ${err}`);
   })
 }
 /**
@@ -131,8 +122,8 @@ exports.deletefile = (query,response) => {
  * @param {string,response} filename
  * @returns {response} Success or Failure
  */
-exports.createfile = (query,response) =>{
-  return db.createFile(query.filename)
+exports.createfile = ({filename},response) =>{
+  return db.createFile(filename)
   .then(()=>{
     response.end(`Success! File has been created.`);
   })
@@ -141,7 +132,7 @@ exports.createfile = (query,response) =>{
     response.writeHead(400,{
       'Content-type': 'text/html'
     })
-    response.end(`An error has occured, ${err}`);
+    response.end(`An error has occurred, ${err}`);
   })
 }
 /**
@@ -159,7 +150,7 @@ exports.postWrite = (pathname,request,response) => {
       // If there isn't a filename in the url
       if(pathname.split('/')[2] === ''){
         response.writeHead(400);
-        return response.end(`An error has occured, Missing filename in url.`);
+        return response.end(`An error has occurred, Missing filename in url.`);
       }
       const filename = pathname.split('/')[2];
       console.log('body',body)
@@ -175,7 +166,7 @@ exports.postWrite = (pathname,request,response) => {
         response.writeHead(400,{
           'Content-type': 'text/html'
         })
-        response.end(`An error has occured while creating file. ${err} `)
+        response.end(`An error has occurred while creating file. ${err} `)
       })
     })
 }
@@ -196,7 +187,7 @@ exports.getFile = (pathname, request, response) =>{
       response.writeHead(400,{
         'Content-type': 'text/html'
       });
-      response.end(`An error has occured while retrieving file. ${err}`);
+      response.end(`An error has occurred while retrieving file. ${err}`);
     })
 }
 
@@ -209,5 +200,60 @@ exports.mergeAllFiles = (request,response) => {
     response.end('Success! All data has been written to mergeData.json');
   })
   .catch(err=>
-    response.end('OOPS'));
+    response.end('An error has occurred'));
+}
+
+exports.union = (request,response,{file1, file2}) => {
+  console.log(`This is file1 ${file1} and file2 ${file2}`)
+  return db.union(file1,file2)
+  .then(()=>{
+    response.writeHead(201,{
+      'Content-Type': 'text/html'
+    });
+    response.end('Success! Nothing has been done.');
+  })
+  .catch(err=>{
+    response.end('An error has occurred');
+
+  })
+}
+
+exports.intersect = (request,response,{file1,file2}) => {
+  console.log(`This is file1 ${file1} and file2 ${file2}`)
+  return db.intersect(file1,file2)
+  .then(()=>{
+    response.writeHead(201,{
+      'Content-Type': 'text/html'
+    });
+    response.end('Success! Nothing has been done.');
+  })
+  .catch(err=>{
+    response.end('An error has occurred');
+
+  })
+}
+
+exports.difference = (request,response,{file1, file2}) => {
+  console.log(`This is file1 ${file1} and file2 ${file2}`)
+  return db.intersect(file1,file2)
+  .then(()=>{
+    response.writeHead(201,{
+      'Content-Type': 'text/html'
+    });
+    response.end('Success! Nothing has been done.');
+  })
+  .catch(err=>{
+    response.end('An error has occurred');
+
+  })
+}
+/**
+ * 404 Error Message
+ * @returns {response} Returns html of a 404 page
+ */
+exports.notFound = async (request,response)=>{
+  const html = await fs.readFile('404.html')
+
+  response.writeHead(404,{'Content-Type': 'text/html'});
+  response.end(html);
 }

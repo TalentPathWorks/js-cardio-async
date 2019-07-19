@@ -1,5 +1,7 @@
 const fs = require('fs').promises;
-
+/**
+ * Resets the files in the database
+ */
 function reset() {
   const andrew = fs.writeFile(
     './andrew.json',
@@ -29,18 +31,6 @@ function reset() {
   const log = fs.writeFile('./log.txt', '');
   return Promise.all([andrew, scott, post, log]);
 }
-/* 
-Every function should be logged with a timestamp.
-If the function logs data, then put that data into the log
-ex after running get('user.json', 'email'):
-  sroberts@talentpath.com 1563221866619
-
-If the function just completes an operation, then mention that
-ex after running delete('user.json'):
-  user.json succesfully delete 1563221866619
-
-Errors should also be logged (preferably in a human-readable format)
-*/
 
 /**
  * Logs the value of object[key]
@@ -52,15 +42,17 @@ async function log(value,err){
   if(err) 
     throw err;
 }
+
 /**
  * 
  * @param {*} fileName 
  */
-async function doesFileExists(fileName){
+async function fileExists(fileName){
   const names = await fs.readdir('./');
   const filteredJsonFiles = names.filter(name =>  name === (fileName));
   return filteredJsonFiles.length === 0 ? false: true
 }
+
 /**
  * Returns a keyvalue from a file
  * @param {String} file 
@@ -68,7 +60,7 @@ async function doesFileExists(fileName){
  */
 async function get(file, key) {
   try{
-    if(!await doesFileExists(file)){
+    if(!await fileExists(file)){
       return log(`Error finding ${file}`,'File does not exists');
     }
    const data = await fs.readFile(file,'utf-8');
@@ -91,7 +83,7 @@ async function get(file, key) {
  */
 async function set(file, key, value) {
   try{
-    if(!await doesFileExists(file)){
+    if(!await fileExists(file)){
       return log(`Error finding ${file}`,'File does not exists');
     }
     const data = await fs.readFile(file,'utf-8');
@@ -112,7 +104,7 @@ async function set(file, key, value) {
 // TODO:Error Checking
 async function remove(file, key) {
   try{
-    if(!await doesFileExists(file)){
+    if(!await fileExists(file)){
       return await log(`Error: ${file} does not exists`)
     }
     const data = await fs.readFile(file,'utf-8');
@@ -135,7 +127,7 @@ async function remove(file, key) {
  */
 async function deleteFile(file) {
   try{ 
-    if(!await doesFileExists(file))
+    if(!await fileExists(file))
       return log(`Error finding ${file}`,'File does not exists');
     await fs.unlink(file);
     return log(`Deleted ${file}`)
@@ -153,7 +145,7 @@ async function deleteFile(file) {
 async function createFile(file, content) {
   
   try{
-    if(await doesFileExists(file)){
+    if(await fileExists(file)){
       return log(`Error with creating file ${file}`,'File already exists.');
     }
     if(content === undefined)
@@ -164,6 +156,7 @@ async function createFile(file, content) {
     return log(`Error with creating file ${file}`,err);
   }
 }
+
 /**
  * Creates file with an empty object inside.
  * Gracefully errors if the file already exists.
@@ -171,7 +164,7 @@ async function createFile(file, content) {
  */
 async function getFile(file) {
     try{
-      if(!await doesFileExists(file)){
+      if(!await fileExists(file)){
         return log(`Error finding ${file}`,'File does not exists');
       }
      const data = await fs.readFile(file,'utf-8');
@@ -181,6 +174,7 @@ async function getFile(file) {
       return log(`Error: ${file} does not exists`,err);
     }
 }
+
 /**
  * Merges all data into a mega object and logs it.
  * Each object key should be the filename (without the .json) and the value should be the contents
@@ -242,7 +236,7 @@ async function union(fileA, fileB) {
   // Figure out to compare keys
   console.log("file 1", file1)
   console.log("file 2", file2)
-
+  return "Not Implemented yet"
 }
 
 /**
@@ -253,7 +247,9 @@ async function union(fileA, fileB) {
  *    intersect('scott.json', 'andrew.json')
  *    // ['firstname', 'lastname', 'email']
  */
-function intersect(fileA, fileB) {}
+function intersect(fileA, fileB) {
+  return "Not Implemented yet"
+}
 
 /**
  * Takes two files and logs all properties that are different between the two objects
@@ -264,7 +260,7 @@ function intersect(fileA, fileB) {}
  *    // ['username']
  */
 function difference(fileA, fileB) {
-
+return "Not Implemented yet"
 }
 
 module.exports = {
@@ -279,4 +275,7 @@ module.exports = {
   intersect,
   difference,
   getFile,
+  union,
+  intersect,
+  difference,
 };
