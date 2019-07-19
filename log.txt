@@ -1,8 +1,0 @@
-Created file asdf.json 1563502143083
-Created file test.json 1563502184924
-Error finding  1563502215293
-Error finding  1563502239393
-Error finding  1563502254233
-Error finding  1563502278989
-Got {"firstname":"Test","lastname":"User","glasses":"true"} from test.json 1563502371486
-All json objects merged. 1563502406211

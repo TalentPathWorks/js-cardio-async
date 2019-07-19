@@ -9,7 +9,7 @@ function reset() {
       firstname: 'Andrew',
       lastname: 'Maney',
       email: 'amaney@talentpath.com',
-    })
+    }),
   );
   const scott = fs.writeFile(
     './scott.json',
@@ -18,7 +18,7 @@ function reset() {
       lastname: 'Roberts',
       email: 'sroberts@talentpath.com',
       username: 'scoot',
-    })
+    }),
   );
   const post = fs.writeFile(
     './post.json',
@@ -26,7 +26,7 @@ function reset() {
       title: 'Async/Await lesson',
       description: 'How to write asynchronous JavaScript',
       date: 'July 15, 2019',
-    })
+    }),
   );
   const log = fs.writeFile('./log.txt', '');
   return Promise.all([andrew, scott, post, log]);
@@ -37,41 +37,39 @@ function reset() {
  * @param {string} file
  * @param {string} key
  */
-async function log(value,err){
-  await fs.appendFile('log.txt',`${value} ${Date.now()}\n`);
-  if(err) 
-    throw err;
+async function log(value, err) {
+  await fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+  if (err) { throw err; }
 }
 
 /**
- * 
- * @param {*} fileName 
+ *
+ * @param {*} fileName
  */
-async function fileExists(fileName){
+async function fileExists(fileName) {
   const names = await fs.readdir('./');
-  const filteredJsonFiles = names.filter(name =>  name === (fileName));
-  return filteredJsonFiles.length === 0 ? false: true
+  const filteredJsonFiles = names.filter(name => name === (fileName));
+  return filteredJsonFiles.length !== 0;
 }
 
 /**
  * Returns a keyvalue from a file
- * @param {String} file 
- * @param {String} key 
+ * @param {String} file
+ * @param {String} key
  */
 async function get(file, key) {
-  try{
-    if(!await fileExists(file)){
-      return log(`Error finding ${file}`,'File does not exists');
+  try {
+    if (!await fileExists(file)) {
+      return log(`Error finding ${file}`, 'File does not exists');
     }
-   const data = await fs.readFile(file,'utf-8');
-   const keyValue = JSON.parse(data);
-   const value = keyValue[key];
-   if(!value) 
-    return log(`Error: ${key} invalid key on ${file}`,'Invalid Key');
-   await log(`Got ${value} from ${file}`);
-   return value
-  }catch(err){
-    return log(`Error with your input ${file}`,err);
+    const data = await fs.readFile(file, 'utf-8');
+    const keyValue = JSON.parse(data);
+    const value = keyValue[key];
+    if (!value) { return log(`Error: ${key} invalid key on ${file}`, 'Invalid Key'); }
+    await log(`Got ${value} from ${file}`);
+    return value;
+  } catch (err) {
+    return log(`Error with your input ${file}`, err);
   }
 }
 
@@ -82,17 +80,17 @@ async function get(file, key) {
  * @param {string} value
  */
 async function set(file, key, value) {
-  try{
-    if(!await fileExists(file)){
-      return log(`Error finding ${file}`,'File does not exists');
+  try {
+    if (!await fileExists(file)) {
+      return log(`Error finding ${file}`, 'File does not exists');
     }
-    const data = await fs.readFile(file,'utf-8');
+    const data = await fs.readFile(file, 'utf-8');
     const plus = JSON.parse(data);
     plus[key] = value;
-    const result = await fs.writeFile(file,JSON.stringify(plus));
+    const result = await fs.writeFile(file, JSON.stringify(plus));
     return log(`Set ${value} for ${key} in ${file}`);
-  }catch (err) {
-    return log(`Error with setting ${value} for ${key} on ${file}`,err);
+  } catch (err) {
+    return log(`Error with setting ${value} for ${key} on ${file}`, err);
   }
 }
 
@@ -103,20 +101,20 @@ async function set(file, key, value) {
  */
 // TODO:Error Checking
 async function remove(file, key) {
-  try{
-    if(!await fileExists(file)){
-      return await log(`Error: ${file} does not exists`)
+  try {
+    if (!await fileExists(file)) {
+      return await log(`Error: ${file} does not exists`);
     }
-    const data = await fs.readFile(file,'utf-8');
+    const data = await fs.readFile(file, 'utf-8');
     const plus = JSON.parse(data);
-    if(plus[key] === undefined){
-      return await log(`Error: ${file} does not contain ${key}`,`Key does not exists in file`)
+    if (plus[key] === undefined) {
+      return await log(`Error: ${file} does not contain ${key}`, 'Key does not exists in file');
     }
-    delete plus[key]
-    const result = await fs.writeFile(file,JSON.stringify(plus));
+    delete plus[key];
+    const result = await fs.writeFile(file, JSON.stringify(plus));
     return log(`Remove ${key} in ${file}`);
-  }catch(err){
-    return log(`Error with removing ${key} on ${file}`,err);
+  } catch (err) {
+    return log(`Error with removing ${key} on ${file}`, err);
   }
 }
 
@@ -126,15 +124,13 @@ async function remove(file, key) {
  * @param {string} file
  */
 async function deleteFile(file) {
-  try{ 
-    if(!await fileExists(file))
-      return log(`Error finding ${file}`,'File does not exists');
+  try {
+    if (!await fileExists(file)) { return log(`Error finding ${file}`, 'File does not exists'); }
     await fs.unlink(file);
-    return log(`Deleted ${file}`)
-  }catch(err){
-    return log(`Error with deleting file ${file}`,err);
+    return log(`Deleted ${file}`);
+  } catch (err) {
+    return log(`Error with deleting file ${file}`, err);
   }
-  
 }
 
 /**
@@ -143,17 +139,15 @@ async function deleteFile(file) {
  * @param {string} file JSON filename
  */
 async function createFile(file, content) {
-  
-  try{
-    if(await fileExists(file)){
-      return log(`Error with creating file ${file}`,'File already exists.');
+  try {
+    if (await fileExists(file)) {
+      return log(`Error with creating file ${file}`, 'File already exists.');
     }
-    if(content === undefined)
-      content = {};
-    const data = await fs.writeFile(file,JSON.stringify(content));
+    if (content === undefined) { content = {}; }
+    const data = await fs.writeFile(file, JSON.stringify(content));
     return log(`Created file ${file}`);
-  }catch(err){
-    return log(`Error with creating file ${file}`,err);
+  } catch (err) {
+    return log(`Error with creating file ${file}`, err);
   }
 }
 
@@ -163,16 +157,16 @@ async function createFile(file, content) {
  * @param {string} file JSON filename
  */
 async function getFile(file) {
-    try{
-      if(!await fileExists(file)){
-        return log(`Error finding ${file}`,'File does not exists');
-      }
-     const data = await fs.readFile(file,'utf-8');
-     log(`Got ${data} from ${file}`);
-     return data;
-    }catch(err){
-      return log(`Error: ${file} does not exists`,err);
+  try {
+    if (!await fileExists(file)) {
+      return log(`Error finding ${file}`, 'File does not exists');
     }
+    const data = await fs.readFile(file, 'utf-8');
+    log(`Got ${data} from ${file}`);
+    return data;
+  } catch (err) {
+    return log(`Error: ${file} does not exists`, err);
+  }
 }
 
 /**
@@ -194,31 +188,27 @@ async function getFile(file) {
  * }
  */
 async function mergeData() {
-  // Read all 
-  const fileNames = await fs.readdir("./");
+  // Read all
+  const fileNames = await fs.readdir('./');
 
   // Filter files for .json and exclude node files
-  const filteredJsonFiles = fileNames.filter(name => name.includes('.json') && name !== "package.json" && name !== "package-lock.json");
+  const filteredJsonFiles = fileNames.filter(name => name.includes('.json') && name !== 'package.json' && name !== 'package-lock.json');
 
   // Read all files
-  const data = filteredJsonFiles.map((value)=>{
-    return fs.readFile(value,"utf-8");
-  })
+  const data = filteredJsonFiles.map(value => fs.readFile(value, 'utf-8'));
   // Process all data
   const allPromises = Promise.all(data);
 
   return await allPromises.then(async (dataArray) => {
     // Get data out of dataArray
-    const jsonBody = dataArray.map((data,index)=>{
-      return "\n\t" + filteredJsonFiles[index].slice(0,-5) + ": " + data;
-    })
+    const jsonBody = dataArray.map((data, index) => `\n\t${filteredJsonFiles[index].slice(0, -5)}: ${data}`);
     // Add ending brackets
-    const jsonObject = "{" + jsonBody + "\n}";
+    const jsonObject = `{${jsonBody}\n}`;
     // Print to file
-    const result = await fs.writeFile('mergeData.json',jsonObject);
-    return log(`All json objects merged.`)    
+    const result = await fs.writeFile('mergeData.json', jsonObject);
+    return log('All json objects merged.');
   })
-  .catch(err=>console.log(err));
+    .catch(err => console.log(err));
 }
 
 /**
@@ -231,12 +221,12 @@ async function mergeData() {
  */
 async function union(fileA, fileB) {
   // Read in files
-  const file1 = await fs.readFile(fileA,'utf-8');
-  const file2 = await fs.readFile(fileB,'utf-8');
+  const file1 = await fs.readFile(fileA, 'utf-8');
+  const file2 = await fs.readFile(fileB, 'utf-8');
   // Figure out to compare keys
-  console.log("file 1", file1)
-  console.log("file 2", file2)
-  return "Not Implemented yet"
+  console.log('file 1', file1);
+  console.log('file 2', file2);
+  return 'Not Implemented yet';
 }
 
 /**
@@ -247,8 +237,14 @@ async function union(fileA, fileB) {
  *    intersect('scott.json', 'andrew.json')
  *    // ['firstname', 'lastname', 'email']
  */
-function intersect(fileA, fileB) {
-  return "Not Implemented yet"
+async function intersect(fileA, fileB) {
+  // Read in files
+  const file1 = await fs.readFile(fileA, 'utf-8');
+  const file2 = await fs.readFile(fileB, 'utf-8');
+  // Figure out to compare keys
+  console.log('file 1', file1);
+  console.log('file 2', file2);
+  return 'Not Implemented yet';
 }
 
 /**
@@ -259,8 +255,9 @@ function intersect(fileA, fileB) {
  *    difference('scott.json', 'andrew.json')
  *    // ['username']
  */
-function difference(fileA, fileB) {
-return "Not Implemented yet"
+async function difference(fileA, fileB) {
+  console.log(`This is ${fileA} and ${fileB}`);
+  return 'Not Implemented yet';
 }
 
 module.exports = {
@@ -275,7 +272,4 @@ module.exports = {
   intersect,
   difference,
   getFile,
-  union,
-  intersect,
-  difference,
 };

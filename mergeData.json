@@ -1,7 +1,20 @@
 {
 	andrew: {"firstname":"Andrew","lastname":"Maney","email":"amaney@talentpath.com"},
 	asdf: {},
+	mergeData: {
+	andrew: {"firstname":"Andrew","lastname":"Maney","email":"amaney@talentpath.com"},
+	asdf: {},
+	mergeData: {
+	andrew: {"firstname":"Andrew","lastname":"Maney","email":"amaney@talentpath.com"},
+	asdf: {},
 	post: {"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},
 	scott: {"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot"},
 	test: {"firstname":"Test","lastname":"User","glasses":"true"}
+},
+	post: {"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},
+	test: {"firstname":"Test","lastname":"User","glasses":"true"}
+},
+	post: {"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},
+	scott: {"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot"},
+	test: {"firstname":"Dean","lastname":"Sumitro","glasses":"true"}
 }
